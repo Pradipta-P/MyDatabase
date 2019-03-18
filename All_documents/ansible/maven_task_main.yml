@@ -1,0 +1,32 @@
+- name: Downloading Maven Binaries
+  get_url:
+      url: '{{ maven_download_url }}'
+      dest: '{{ maven_home_parent_directory }}/{{ maven_file_name }}'
+  when: maven_installed.stat.exist != True
+
+- name: Unarchive Maven Binaries
+  unarchive:
+        src: '{{ maven_home_paren_directory }}/{{ maven_file_name }}'
+        dest: '{{ maven_home_parent_direccctory }}'
+
+- name: Remove old path configuration
+  file:
+    path: /etc/profile.d/maven.sh
+    state: absent
+  when: maven_installed.stat.exist != True
+
+- name: Maven Path COnfiguration
+  lineinfile:
+        dest: /etc/profile.d/maven.sh
+        line: '{{ item.line }}'
+        create: yes
+        state: present
+  with_items:
+      - { line: 'M2_HOME={{maven_home_parent_directory}}/apache-maven-{{maven_version}}'}
+      - { line: 'PATH=$PATH:$M2_HOME/bin'}  
+ 
+- name: Cleaning Up
+  file:
+    state: absent
+    path: '{{  maven_home_parent_directory }}/{{ maven_file_name}}'
+  when: maven_installed.stat.exist != True

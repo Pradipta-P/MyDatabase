@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Install JDK 1.8
+      yum: name=java-1.8.0-openjdk state=present
+    - name: Install Git
+      yum: name=git state=present
