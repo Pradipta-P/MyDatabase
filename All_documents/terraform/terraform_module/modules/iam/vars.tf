@@ -1,0 +1,9 @@
+variable "rs_bucket_arn" {}
+variable "log_bucket_arn" {}
+variable "dynamodb_table_arn" {}
+variable "iam_user" {}
+variable "user" {}
+variable "iam_role" {}
+variable "s3_iam_policy_arn" {}
+variable "dynamodb_iam_policy_arn" {}
+variable "iam_role_s3" {}
