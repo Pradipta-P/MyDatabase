@@ -1,0 +1,9 @@
+---
+- hosts: demo
+  become: yes
+  user: ansadmin
+  tasks:
+    - name: Install Python3
+      apt:
+        pkg: python3-pip
+        state: present

@@ -1,0 +1,32 @@
+- name: Download Oracle Java
+  get_url:
+       url: https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.tar.gz
+       dest: /opt
+       headers: 'Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie'
+- name: Extract Java tar file
+  unarchive:
+       src: /opt/jdk-8u201-linux-x64.tar.gz
+       dest: /opt
+       remote_src: yes
+- name: Java alternative
+  command: 'alternatives --install "/usr/bin/java" "java" "{{java_name}}/bin/java" 2000'
+  args:
+    shdir: /opt/   
+    remote_src: yes
+
+  #- name: Java Path Configuration
+  #lineinfile:
+  # dest: /etc/profile
+  # line: '{{ item.line }}'
+  # create: yes
+  # state: absent
+  #  with_items:
+  # - { line: 'export export JAVA_HOME=/opt/jdk1.8.0_201'}
+  # - { line: 'export JRE_HOME=/opt/jdk1.8.0_201/jre'}
+  #    - { line: 'export export PATH=$PATH:/opt/jdk1.8.0_201/bin:/opt/jdk1.8.0_201/jre/bin'} 
+
+  #- name: execute profile
+  #shell: source /etc/profile
+  #args:
+  # executable: /bin/bash
+

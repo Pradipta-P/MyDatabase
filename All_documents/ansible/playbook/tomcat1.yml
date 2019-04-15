@@ -1,0 +1,31 @@
+---
+- hosts: demo
+  become: yes
+  user: ansadmin
+  tasks:
+    - name: Include Java 8
+      include: java.yml
+    - name: create folder for tomcat
+      file:
+        path: /home/ansadmin/tomcat
+        state: directory
+        mode: 0755
+        owner: ansadmin
+        group: ansadmin
+        recurse: yes
+    - name: Download Tomcat
+      get_url: 
+         url: https://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.38/bin/apache-tomcat-8.5.38.tar.gz
+         dest: /home/ansadmin/tomcat  
+         owner: ansadmin
+         group: ansadmin
+         mode: 0755
+    - name: Extract archive
+      unarchive:
+           remote_src: yes
+           src: /home/ansadmin/tomcat/apache-tomcat-8.5.38.tar.gz
+           dest: /home/ansadmin/tomcat
+    - name: start apache-tomcat  
+      shell: /home/ansadmin/tomcat/apache-tomcat-8.5.38/bin/startup.sh
+      args:
+        executable: /bin/bash

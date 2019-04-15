@@ -1,0 +1,24 @@
+- name: create group(ubuntu)
+  group:
+     name: tomcat
+     state: present
+- name: create user
+  user:
+    name: tomcat
+    group: tomcat
+    create_home: yes
+    shell: /bin/bash
+- name: create .ssh directory
+  file:
+    path: /home/tomcat/.ssh
+    state: directory
+    owner: tomcat
+    group: tomcat
+- name: copy ssh_key
+  copy:
+    src: /home/hp/.ssh/id_rsa.pub
+    dest: /home/tomcat/.ssh/authorized_keys
+- name: add user to sudoers
+  lineinfile:
+       path: /etc/sudoers
+       line: tomcat     ALL=(ALL:ALL)   NOPASSWD:ALL
