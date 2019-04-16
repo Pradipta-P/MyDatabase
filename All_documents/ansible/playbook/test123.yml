@@ -1,0 +1,20 @@
+---
+- host: all
+  become: yes
+  user: ansadmin
+  tasks:
+     - name: Download Tomact
+       get_url:
+            url: //
+            dest: /home/root/tomcat
+            owner: tomcat
+            group: tomcat
+            mode: 775
+    - name: Extract the file
+      unarchive:
+            remote_src: yes
+            src: /home/root/tomcat/apache-tomcat8.5.38.tar.gz
+            dest: /home/root/tomcat
+    - name: Start Tomcat
+      shell: /home/root/tomcat/apache-tomcat8.5.38/bin/startup.sh
+      remote_src: yes
