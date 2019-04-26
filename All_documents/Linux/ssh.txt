@@ -1,0 +1,11 @@
+download the devops.pem
+download the hq-devops.pem
+go to your downloads folder
+give the keys desired permissions
+chmod 400 devops.pem
+chmod 400 hq-devops.pem
+ssh-add devops.pem
+ssh-add hq-devops.pem
+ssh -A ubuntu@13.250.180.228
+ssh <server_IP>
+perform these commands
