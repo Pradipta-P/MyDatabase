@@ -1,0 +1,78 @@
+---
+- hosts: demo
+  become: yes
+  tasks:
+    - name: Install add-apt-repostory
+      become: yes
+      apt: name=software-properties-common state=latest
+    - name: Install openjdk-11
+      become: yes
+      apt: name={{item}} state=latest
+      with_items:
+        - openjdk-11-jdk
+    - name: Set JAVA_HOME
+      lineinfile:
+         dest: /etc/profile
+         line: "{{ item }}"
+      with_items:
+           - 'export JAVA_HOME="/usr/lib/jvm/java-1.11.0-openjdk-amd64"'
+           - 'export PATH=$JAVA_HOME/bin:$PATH'
+    - name: create group as tomcat
+      group:
+         name: tomcat
+         state: present
+    - name: create tomcat user
+      user:
+         name: tomcat
+         group: tomcat
+    - name: Create Folder
+      file:
+         path: /home/ansible/tomcat
+         state: directory
+         mode: 0755
+         group: tomcat
+    - name: Download TOmcat
+      get_url: url=http://apachemirror.wuchna.com/tomcat/tomcat-9/v9.0.29/bin/apache-tomcat-9.0.29.tar.gz dest=/home/ansible/tomcat
+    - name: Extract arcive
+      unarchive:
+        src: /home/ansible/tomcat/apache-tomcat-9.0.29.tar.gz
+        dest: /home/ansible/tomcat
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+    - name: Give the tomcat group ownership over the entire installation directory
+      file:
+         path: /home/ansible/tomcat
+         recurse: yes
+         group: tomcat
+    - name: give the tomcat group read access to the conf directory
+      file:
+         path: /home/ansible/tomcat/conf
+         recurse: yes
+         group: tomcat
+         mode: g+r
+    - name: execute access to the conf directory
+      file:
+         path: /home/ansible/tomcat/conf
+         group: tomcat
+         mode: g+x
+    - name: Make the tomcat user the owner of the webapps, work, temp, and logs directories
+      file:
+         path: "{{ item }}"
+         recurse: yes
+         owner: tomcat
+      with_items:
+        - /home/ansible/tomcat/webapps
+        - /home/ansible/tomcat/work
+        - /home/ansible/tomcat/temp
+        - /home/ansible/tomcat/logs
+    - name: copy the tomcat.service to /etc/systemd/system/
+      copy:
+         src: /home/ansible/tomcat.service
+         dest: /etc/systemd/system/tomcat.service
+    - name: reload the daemon
+      shell: systemctl daemon-reload
+      become: true
+    - name: start apache-tomcat
+      service:
+            name: tomcat
+            state: started
